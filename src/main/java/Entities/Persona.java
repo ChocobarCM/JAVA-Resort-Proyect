@@ -2,6 +2,7 @@ package Entities;
 
 public class Persona {
 	private int idPersona;
+	private int dni;
 	private String nombreComp;
 	private String mail;
 	private String contrasenia;
@@ -11,6 +12,13 @@ public class Persona {
 	}
 	public void setIdPersona(int idPersona) {
 		this.idPersona = idPersona;
+	}
+	
+	public int getDni() {
+		return dni;
+	}
+	public void setDni(int dni) {
+		this.dni = dni;
 	}
 	public String getNombreComp() {
 		return nombreComp;

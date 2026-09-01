@@ -2,9 +2,8 @@ package Entities;
 
 public class Reserva {
     private int idReserva;
-    private Cliente cliente;
+    private Usuario usuario;
     private Habitacion habitacion;
-    private Publicacion publicacion;
 
     public Reserva() {}
 
@@ -15,13 +14,13 @@ public class Reserva {
 	public void setIdReserva(int idReserva) {
 		this.idReserva = idReserva;
 	}
-
-	public Cliente getCliente() {
-		return cliente;
+	
+	public Usuario getUsuario() {
+		return usuario;
 	}
 
-	public void setCliente(Cliente cliente) {
-		this.cliente = cliente;
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
 	}
 
 	public Habitacion getHabitacion() {
@@ -31,13 +30,5 @@ public class Reserva {
 	public void setHabitacion(Habitacion habitacion) {
 		this.habitacion = habitacion;
 	}
-
-	public Publicacion getPublicacion() {
-		return publicacion;
-	}
-
-	public void setPublicacion(Publicacion publicacion) {
-		this.publicacion = publicacion;
-	}
-    
 }
+    
