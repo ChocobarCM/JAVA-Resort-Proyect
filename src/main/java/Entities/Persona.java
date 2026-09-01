@@ -4,8 +4,6 @@ public class Persona {
 	private int idPersona;
 	private int dni;
 	private String nombreComp;
-	private String mail;
-	private String contrasenia;
 	private String rol;
 	public int getIdPersona() {
 		return idPersona;
@@ -25,18 +23,6 @@ public class Persona {
 	}
 	public void setNombreComp(String nombreComp) {
 		this.nombreComp = nombreComp;
-	}
-	public String getMail() {
-		return mail;
-	}
-	public void setMail(String mail) {
-		this.mail = mail;
-	}
-	public String getContrasenia() {
-		return contrasenia;
-	}
-	public void setContrasenia(String contrasenia) {
-		this.contrasenia = contrasenia;
 	}
 	public String getRol() {
 		return rol;
