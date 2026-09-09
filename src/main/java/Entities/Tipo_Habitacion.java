@@ -3,6 +3,7 @@ package Entities;
 public class Tipo_Habitacion {
     private int idTipoHab;
     private String nomb;
+    private String descripcion;
     private int capacidad;
     private double precioNoche;
 
@@ -22,6 +23,15 @@ public class Tipo_Habitacion {
 
 	public void setNomb(String nomb) {
 		this.nomb = nomb;
+	}
+	
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
 	}
 
 	public int getCapacidad() {

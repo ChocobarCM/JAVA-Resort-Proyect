@@ -10,11 +10,12 @@ USE java_resort;
 -- TABLA PERSONA
 -- =========================================================
 
-CREATE TABLE Persona (
-    idPersona INT AUTO_INCREMENT,
+CREATE TABLE persona (
+    idPersona INT AUTO_INCREMENT PRIMARY KEY,
     dni INT NOT NULL,
-    nombreComp VARCHAR(100) NOT NULL,
-    rol VARCHAR(50) NOT NULL,
+    nombre VARCHAR(50) NOT NULL,
+    apellido VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL
 
     CONSTRAINT PK_Persona
         PRIMARY KEY (idPersona),
@@ -29,17 +30,15 @@ CREATE TABLE Persona (
 -- Hereda de Persona
 -- =========================================================
 
-CREATE TABLE Usuario (
-    idPersona INT,
+CREATE TABLE usuario (
+    idPersona INT PRIMARY KEY,
+    nombreUsuario VARCHAR(50) NOT NULL UNIQUE,
+    contrasenia VARCHAR(255) NOT NULL,
+    rol VARCHAR(30) NOT NULL,
+    estado VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
 
-    CONSTRAINT PK_Usuario
-        PRIMARY KEY (idPersona),
-
-    CONSTRAINT FK_Usuario_Persona
-        FOREIGN KEY (idPersona)
-        REFERENCES Persona(idPersona)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+    FOREIGN KEY (idPersona) REFERENCES persona(idPersona)
+);
 );
 
 

@@ -1,19 +1,20 @@
 package Entities;
 
 public class Usuario extends Persona {
-    private String mail;
+    private String nombreUsuario;
     private String contrasenia;
+    private String rol;
+    private String estado;
 
     public Usuario() {
         super();
     }
-
-	public String getMail() {
-		return mail;
+	public String getNombreUsuario() {
+		return nombreUsuario;
 	}
 
-	public void setMail(String mail) {
-		this.mail = mail;
+	public void setNombreUsuario(String nombreUsuario) {
+		this.nombreUsuario = nombreUsuario;
 	}
 
 	public String getContrasenia() {
@@ -22,6 +23,18 @@ public class Usuario extends Persona {
 
 	public void setContrasenia(String contrasenia) {
 		this.contrasenia = contrasenia;
+	}
+	public String getRol() {
+		return rol;
+	}
+	public void setRol(String rol) {
+		this.rol = rol;
+	}
+	public String getEstado() {
+		return estado;
+	}
+	public void setEstado(String estado) {
+		this.estado = estado;
 	}
     
 }

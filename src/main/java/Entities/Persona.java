@@ -3,8 +3,9 @@ package Entities;
 public class Persona {
 	private int idPersona;
 	private int dni;
-	private String nombreComp;
-	private String rol;
+	private String nombre;
+	private String apellido;
+	private String email;
 	public int getIdPersona() {
 		return idPersona;
 	}
@@ -18,18 +19,23 @@ public class Persona {
 	public void setDni(int dni) {
 		this.dni = dni;
 	}
-	public String getNombreComp() {
-		return nombreComp;
+	public String getNombre() {
+		return nombre;
 	}
-	public void setNombreComp(String nombreComp) {
-		this.nombreComp = nombreComp;
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
 	}
-	public String getRol() {
-		return rol;
+	public String getApellido() {
+		return apellido;
 	}
-	public void setRol(String rol) {
-		this.rol = rol;
+	public void setApellido(String apellido) {
+		this.apellido = apellido;
 	}
-
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
 	
 }

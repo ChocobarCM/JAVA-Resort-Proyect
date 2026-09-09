@@ -20,7 +20,7 @@ public class DataPersona {
                     .createStatement();
 
             rs = stmt.executeQuery(
-                    "SELECT idPersona, dni, nombreComp, rol FROM persona"
+                    "SELECT idPersona, dni, nombre, apellido, email FROM persona"
             );
 
             if (rs != null) {
@@ -31,8 +31,9 @@ public class DataPersona {
 
                     p.setIdPersona(rs.getInt("idPersona"));
                     p.setDni(rs.getInt("dni"));
-                    p.setNombreComp(rs.getString("nombreComp"));
-                    p.setRol(rs.getString("rol"));
+                    p.setNombre(rs.getString("nombre"));
+                    p.setApellido(rs.getString("apellido"));
+                    p.setEmail(rs.getString("email"));
 
                     personas.add(p);
                 }
@@ -75,7 +76,7 @@ public class DataPersona {
             stmt = DbConnector.getInstancia()
                     .getConn()
                     .prepareStatement(
-                            "SELECT idPersona, dni, nombreComp, rol " +
+                            "SELECT idPersona, dni, nombre, apellido, email " +
                             "FROM persona WHERE dni = ?"
                     );
 
@@ -89,8 +90,9 @@ public class DataPersona {
 
                 p.setIdPersona(rs.getInt("idPersona"));
                 p.setDni(rs.getInt("dni"));
-                p.setNombreComp(rs.getString("nombreComp"));
-                p.setRol(rs.getString("rol"));
+                p.setNombre(rs.getString("nombre"));
+                p.setApellido(rs.getString("apellido"));
+                p.setEmail(rs.getString("email"));
             }
 
         } catch (SQLException e) {
@@ -129,14 +131,15 @@ public class DataPersona {
             stmt = DbConnector.getInstancia()
                     .getConn()
                     .prepareStatement(
-                            "INSERT INTO persona(dni, nombreComp, rol) " +
-                            "VALUES (?, ?, ?)",
+                            "INSERT INTO persona(dni, nombre, apellido, email) " +
+                            "VALUES (?, ?, ?, ?)",
                             PreparedStatement.RETURN_GENERATED_KEYS
                     );
 
             stmt.setInt(1, p.getDni());
-            stmt.setString(2, p.getNombreComp());
-            stmt.setString(3, p.getRol());
+            stmt.setString(2, p.getNombre());
+            stmt.setString(3, p.getApellido());
+            stmt.setString(4, p.getEmail());
 
             stmt.executeUpdate();
 
@@ -157,6 +160,82 @@ public class DataPersona {
                 if (keyResultSet != null) {
                     keyResultSet.close();
                 }
+
+                if (stmt != null) {
+                    stmt.close();
+                }
+
+                DbConnector.getInstancia().releaseConn();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void update(Persona p) {
+
+        PreparedStatement stmt = null;
+
+        try {
+
+            stmt = DbConnector.getInstancia()
+                    .getConn()
+                    .prepareStatement(
+                            "UPDATE persona " +
+                            "SET dni = ?, nombre = ?, apellido = ?, email = ? " +
+                            "WHERE idPersona = ?"
+                    );
+
+            stmt.setInt(1, p.getDni());
+            stmt.setString(2, p.getNombre());
+            stmt.setString(3, p.getApellido());
+            stmt.setString(4, p.getEmail());
+            stmt.setInt(5, p.getIdPersona());
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        } finally {
+
+            try {
+
+                if (stmt != null) {
+                    stmt.close();
+                }
+
+                DbConnector.getInstancia().releaseConn();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    public void delete(Persona p) {
+
+        PreparedStatement stmt = null;
+
+        try {
+
+            stmt = DbConnector.getInstancia()
+                    .getConn()
+                    .prepareStatement(
+                            "DELETE FROM persona WHERE idPersona = ?"
+                    );
+
+            stmt.setInt(1, p.getIdPersona());
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        } finally {
+
+            try {
 
                 if (stmt != null) {
                     stmt.close();
