@@ -5,17 +5,16 @@
 CREATE DATABASE IF NOT EXISTS java_resort;
 USE java_resort;
 
-
 -- =========================================================
 -- TABLA PERSONA
 -- =========================================================
 
 CREATE TABLE persona (
-    idPersona INT AUTO_INCREMENT PRIMARY KEY,
+    idPersona INT AUTO_INCREMENT,
     dni INT NOT NULL,
     nombre VARCHAR(50) NOT NULL,
     apellido VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL
+    email VARCHAR(100) NOT NULL,
 
     CONSTRAINT PK_Persona
         PRIMARY KEY (idPersona),
@@ -24,10 +23,8 @@ CREATE TABLE persona (
         UNIQUE (dni)
 );
 
-
 -- =========================================================
 -- TABLA USUARIO
--- Hereda de Persona
 -- =========================================================
 
 CREATE TABLE usuario (
@@ -39,8 +36,6 @@ CREATE TABLE usuario (
 
     FOREIGN KEY (idPersona) REFERENCES persona(idPersona)
 );
-);
-
 
 -- =========================================================
 -- TABLA TIPO_HABITACION
@@ -61,7 +56,6 @@ CREATE TABLE Tipo_Habitacion (
     CONSTRAINT CHK_Tipo_Habitacion_Precio
         CHECK (precioNoche >= 0)
 );
-
 
 -- =========================================================
 -- TABLA HABITACION
@@ -87,7 +81,6 @@ CREATE TABLE Habitacion (
         ON UPDATE CASCADE
 );
 
-
 -- =========================================================
 -- TABLA SERVICIOS
 -- =========================================================
@@ -105,7 +98,6 @@ CREATE TABLE Servicios (
         CHECK (precioS >= 0)
 );
 
-
 -- =========================================================
 -- TABLA RESERVA
 -- =========================================================
@@ -120,7 +112,7 @@ CREATE TABLE Reserva (
 
     CONSTRAINT FK_Reserva_Usuario
         FOREIGN KEY (idUsuario)
-        REFERENCES Usuario(idPersona)
+        REFERENCES usuario(idPersona)
         ON DELETE RESTRICT
         ON UPDATE CASCADE,
 
@@ -130,8 +122,3 @@ CREATE TABLE Reserva (
         ON DELETE RESTRICT
         ON UPDATE CASCADE
 );
-
-
--- =========================================================
--- FIN DEL SCRIPT
--- =========================================================
