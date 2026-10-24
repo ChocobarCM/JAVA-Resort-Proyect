@@ -22,7 +22,7 @@ public class PersonaServlet extends HttpServlet {
         if (action == null || action.equals("list")) {
             LinkedList<Persona> personas = dp.getAll();
             request.setAttribute("listaPersonas", personas);
-            request.getRequestDispatcher("personas.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/Vista/personas.jsp").forward(request, response);
         }
     }
 
