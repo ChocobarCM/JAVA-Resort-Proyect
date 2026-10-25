@@ -1,0 +1,30 @@
+# ---- Compilados (se regeneran al compilar) ----
+build/
+bin/
+target/
+*.class
+*.war
+
+# ---- Eclipse / Tomcat (solo lo que es local de cada maquina) ----
+.metadata/
+.recommenders/
+tmp*/
+Servers/
+.apt_generated/
+.factorypath
+
+# ---- Otros editores ----
+.idea/
+*.iml
+.vscode/
+
+# ---- Sistema operativo ----
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# ---- Logs ----
+*.log
+
+# ---- Configuracion local con datos propios (ej: contrasenia de MySQL) ----
+db.properties
