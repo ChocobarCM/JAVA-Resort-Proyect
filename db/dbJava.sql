@@ -44,6 +44,7 @@ CREATE TABLE usuario (
 CREATE TABLE Tipo_Habitacion (
     idTipoHab INT AUTO_INCREMENT,
     nomb VARCHAR(100) NOT NULL,
+    descripcion VARCHAR(255),
     capacidad INT NOT NULL,
     precioNoche DECIMAL(10,2) NOT NULL,
 
