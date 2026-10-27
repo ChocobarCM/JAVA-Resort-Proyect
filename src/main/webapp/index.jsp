@@ -110,6 +110,17 @@
             </div>
         </div>
     </div>
+    
+    <div class="col-md-3 mb-4">
+    <div class="card h-100 shadow-sm text-center p-4 border-0">
+        <div class="card-body d-flex flex-column">
+            <h4 class="card-title fw-bold text-dark">Tipos de Cuartos</h4>
+            <p class="card-text text-muted mb-4">Gestión de categorías, capacidades y precios por noche.</p>
+            <a href="TipoHabitacionServlet?action=list" class="btn btn-primary mt-auto">Ingresar</a>
+        </div>
+    </div>
+</div>
+    
     <% } %>
 
 <% } %>

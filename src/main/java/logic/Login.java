@@ -14,11 +14,6 @@ public class Login {
 		du = new DataUsuario();
 	}
 
-	/**
-	 * Valida las credenciales. Recibe un Usuario con nombreUsuario y contrasenia
-	 * cargados y devuelve el Usuario completo de la base (sin la contraseña),
-	 * o null si las credenciales son incorrectas o el usuario está inactivo.
-	 */
 	public Usuario validate(Usuario u) {
 		if (u == null || u.getNombreUsuario() == null || u.getContrasenia() == null) {
 			return null;
