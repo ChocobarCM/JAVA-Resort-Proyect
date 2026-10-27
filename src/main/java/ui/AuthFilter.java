@@ -29,7 +29,7 @@ public class AuthFilter implements Filter {
 	public static final String ROL_ADMIN = "ADMIN";
 
 	// Rutas accesibles sin iniciar sesión
-	private static final Set<String> PUBLICAS = Set.of("", "/", "/index.jsp", "/LoginServlet");
+	private static final Set<String> PUBLICAS = Set.of("", "/", "/index.jsp", "/LoginServlet", "/RegisterServlet");
 
 	// Servlets de ABMC: solo el administrador. Al crear un servlet nuevo, se agrega acá.
 	private static final Set<String> SOLO_ADMIN = Set.of(

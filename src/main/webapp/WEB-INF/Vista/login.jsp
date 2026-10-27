@@ -36,6 +36,9 @@
                     <% if (error != null) { %>
                         <div class="alert alert-danger py-2" role="alert"><%= esc(error) %></div>
                     <% } %>
+                    <% if ("1".equals(request.getParameter("registrado"))) { %>
+                        <div class="alert alert-success py-2" role="alert">Cuenta creada correctamente. Ya puede iniciar sesión.</div>
+                    <% } %>
 
                     <form action="LoginServlet" method="POST">
                         <div class="mb-3">
@@ -54,6 +57,7 @@
                 </div>
             </div>
             <div class="text-center mt-3">
+                <p class="mb-2 small">¿No tiene cuenta? <a href="RegisterServlet" class="fw-semibold">Crear una cuenta</a></p>
                 <a href="index.jsp" class="text-muted small">&larr; Volver al inicio</a>
             </div>
         </div>

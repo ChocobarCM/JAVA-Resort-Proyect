@@ -10,7 +10,7 @@ public class DbConnector {
 	private String host="localhost";
 	private String port="3306";
 	private String user="root";
-	private String password="root";
+	private String password="admin";
 	private String db="java_resort";
 	private int conectados=0;
 	private Connection conn=null;
@@ -41,6 +41,17 @@ public class DbConnector {
 		}
 		conectados++;
 		return conn;
+	}
+	
+	/**
+	 * Abre una conexión NUEVA, que no se comparte con el resto de las requests.
+	 * Hace falta para las transacciones (varios INSERT que deben guardarse juntos o
+	 * no guardarse): con la conexión compartida de getConn(), un setAutoCommit(false)
+	 * o un rollback afectarían también a otros usuarios que estén usando el sistema.
+	 * Quien la pide es responsable de cerrarla (conn.close()).
+	 */
+	public Connection getNewConn() throws SQLException {
+		return DriverManager.getConnection("jdbc:mysql://"+host+":"+port+"/"+db, user, password);
 	}
 	
 	public void releaseConn() {

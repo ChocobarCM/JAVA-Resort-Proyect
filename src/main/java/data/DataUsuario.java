@@ -142,79 +142,77 @@ public class DataUsuario {
 	}
 
 
-	public void add(Usuario u) {
+	/**
+	 * Da de alta la Persona y su Usuario asociado en UNA transacción:
+	 * o se guardan las dos filas o no se guarda ninguna (si falla el INSERT del
+	 * usuario, por ejemplo por nombreUsuario repetido, se deshace también la persona).
+	 * Usa una conexión propia (ver DbConnector.getNewConn) y lanza SQLException
+	 * para que la capa de arriba pueda informar el error en lugar de ocultarlo.
+	 */
+	public void add(Usuario u) throws SQLException {
 
-	    PreparedStatement stmtPersona = null;
-	    PreparedStatement stmtUsuario = null;
-	    ResultSet keyResultSet = null;
+	    Connection conn = null;
 
 	    try {
+	        conn = DbConnector.getInstancia().getNewConn();
+	        conn.setAutoCommit(false);
 
-	        // Primero insertamos la Persona
-	        stmtPersona = DbConnector.getInstancia()
-	                .getConn()
-	                .prepareStatement(
-	                        "INSERT INTO persona(dni, nombre, apellido, email) " +
-	                        "VALUES (?, ?, ?, ?)",
-	                        PreparedStatement.RETURN_GENERATED_KEYS
-	                );
+	        // 1) Persona
+	        try (PreparedStatement stmtPersona = conn.prepareStatement(
+	                "INSERT INTO persona(dni, nombre, apellido, email) VALUES (?, ?, ?, ?)",
+	                PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-	        stmtPersona.setInt(1, u.getDni());
-	        stmtPersona.setString(2, u.getNombre());
-	        stmtPersona.setString(3, u.getApellido());
-	        stmtPersona.setString(4, u.getEmail());
+	            stmtPersona.setInt(1, u.getDni());
+	            stmtPersona.setString(2, u.getNombre());
+	            stmtPersona.setString(3, u.getApellido());
+	            stmtPersona.setString(4, u.getEmail());
+	            stmtPersona.executeUpdate();
 
-	        stmtPersona.executeUpdate();
-
-	        keyResultSet = stmtPersona.getGeneratedKeys();
-
-	        if (keyResultSet != null && keyResultSet.next()) {
-	            u.setIdPersona(keyResultSet.getInt(1));
+	            try (ResultSet keys = stmtPersona.getGeneratedKeys()) {
+	                if (keys.next()) {
+	                    u.setIdPersona(keys.getInt(1));
+	                } else {
+	                    throw new SQLException("No se obtuvo el id de la persona creada");
+	                }
+	            }
 	        }
 
-	        // Después insertamos el Usuario
-	        stmtUsuario = DbConnector.getInstancia()
-	                .getConn()
-	                .prepareStatement(
-	                        "INSERT INTO usuario(" +
-	                        "idPersona, nombreUsuario, contrasenia, rol, estado" +
-	                        ") VALUES (?, ?, ?, ?, ?)"
-	                );
+	        // 2) Usuario (usa el idPersona recién generado)
+	        try (PreparedStatement stmtUsuario = conn.prepareStatement(
+	                "INSERT INTO usuario(idPersona, nombreUsuario, contrasenia, rol, estado) " +
+	                "VALUES (?, ?, ?, ?, ?)")) {
 
-	        stmtUsuario.setInt(1, u.getIdPersona());
-	        stmtUsuario.setString(2, u.getNombreUsuario());
-	        stmtUsuario.setString(3, u.getContrasenia());
-	        stmtUsuario.setString(4, u.getRol());
-	        stmtUsuario.setString(5, u.getEstado());
+	            stmtUsuario.setInt(1, u.getIdPersona());
+	            stmtUsuario.setString(2, u.getNombreUsuario());
+	            stmtUsuario.setString(3, u.getContrasenia());
+	            stmtUsuario.setString(4, u.getRol());
+	            stmtUsuario.setString(5, u.getEstado());
+	            stmtUsuario.executeUpdate();
+	        }
 
-	        stmtUsuario.executeUpdate();
+	        conn.commit();
 
 	    } catch (SQLException e) {
-	        e.printStackTrace();
+	        if (conn != null) {
+	            try {
+	                conn.rollback();
+	            } catch (SQLException ex) {
+	                e.addSuppressed(ex);
+	            }
+	        }
+	        throw e;
 
 	    } finally {
-
-	        try {
-
-	            if (keyResultSet != null) {
-	                keyResultSet.close();
+	        if (conn != null) {
+	            try {
+	                conn.close();
+	            } catch (SQLException e) {
+	                e.printStackTrace();
 	            }
-
-	            if (stmtPersona != null) {
-	                stmtPersona.close();
-	            }
-
-	            if (stmtUsuario != null) {
-	                stmtUsuario.close();
-	            }
-
-	            DbConnector.getInstancia().releaseConn();
-
-	        } catch (SQLException e) {
-	            e.printStackTrace();
 	        }
 	    }
 	}
+
     public void update(Usuario u) {
 
         PreparedStatement stmtPersona = null;
