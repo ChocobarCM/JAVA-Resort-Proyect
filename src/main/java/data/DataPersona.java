@@ -1,9 +1,9 @@
 package data;
 
-import Entities.Persona;
-
 import java.sql.*;
 import java.util.LinkedList;
+
+import entities.Persona;
 
 public class DataPersona {
 

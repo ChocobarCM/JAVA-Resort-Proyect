@@ -1,7 +1,8 @@
 package ui;
 
 import data.DataPersona;
-import Entities.Persona;
+import entities.Persona;
+
 import java.util.LinkedList;
 
 public class TestPersona {

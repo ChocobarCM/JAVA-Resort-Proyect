@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import Entities.Tipo_Habitacion;
 import data.DataTipoHabitacion;
+import entities.Tipo_Habitacion;
 
 @WebServlet("/TipoHabitacionServlet")
 public class TipoHabitacionServlet extends HttpServlet {

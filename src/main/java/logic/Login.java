@@ -2,8 +2,8 @@ package logic;
 
 import java.util.LinkedList;
 
-import Entities.*;
 import data.*;
+import entities.*;
 
 public class Login {
 	private DataPersona dp;

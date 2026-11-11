@@ -1,9 +1,10 @@
 package data;
 
-import Entities.Habitacion;
-import Entities.Tipo_Habitacion;
 import java.sql.*;
 import java.util.LinkedList;
+
+import entities.Habitacion;
+import entities.Tipo_Habitacion;
 
 public class DataHabitacion {
 

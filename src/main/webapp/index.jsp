@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="Entities.Usuario" %>
+<%@ page import="entities.Usuario" %>
 <%!
     private static String esc(String s) {
         if (s == null) return "";
@@ -68,10 +68,38 @@
     </div>
 
     <% if (!"ADMIN".equals(usuario.getRol())) { %>
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="alert alert-info text-center" role="alert">
-                Su cuenta todavía no tiene módulos habilitados.
+    <!-- ===== Menú del cliente (sin privilegios de administrador) ===== -->
+    <div class="row g-4 justify-content-center">
+        <!-- Mis Reservas (pendiente) -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4 d-flex flex-column">
+                    <h4 class="card-title fw-bold text-dark mb-3">Mis Reservas</h4>
+                    <p class="card-text text-muted flex-grow-1">Consulte el estado y el detalle de sus reservas.</p>
+                    <button class="btn btn-secondary w-100 py-2 fw-semibold mt-3" disabled>Próximamente</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reservar (pendiente) -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4 d-flex flex-column">
+                    <h4 class="card-title fw-bold text-dark mb-3">Reservar</h4>
+                    <p class="card-text text-muted flex-grow-1">Elija sus fechas y vea las habitaciones disponibles.</p>
+                    <button class="btn btn-secondary w-100 py-2 fw-semibold mt-3" disabled>Próximamente</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Perfil (pendiente) -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4 d-flex flex-column">
+                    <h4 class="card-title fw-bold text-dark mb-3">Perfil</h4>
+                    <p class="card-text text-muted flex-grow-1">Revise y actualice los datos de su cuenta.</p>
+                    <button class="btn btn-secondary w-100 py-2 fw-semibold mt-3" disabled>Próximamente</button>
+                </div>
             </div>
         </div>
     </div>
@@ -88,13 +116,13 @@
             </div>
         </div>
 
-        <!-- Módulo Habitaciones (pendiente) -->
+        <!-- Módulo Habitaciones -->
         <div class="col-md-4">
-            <div class="card h-100 shadow-sm border-0">
+            <div class="card h-100 shadow-sm border-0 hover-card">
                 <div class="card-body text-center p-4 d-flex flex-column">
                     <h4 class="card-title fw-bold text-dark mb-3">Habitaciones</h4>
                     <p class="card-text text-muted flex-grow-1">Configuración de disponibilidad, tipos de cuartos y mantenimiento.</p>
-                    <button class="btn btn-secondary w-100 py-2 fw-semibold mt-3" disabled>Próximamente</button>
+                    <a href="HabitacionServlet?action=list" class="btn btn-primary w-100 py-2 fw-semibold mt-3">Ingresar</a>
                 </div>
             </div>
         </div>

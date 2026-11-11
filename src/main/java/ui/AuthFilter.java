@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import Entities.Usuario;
+import entities.Usuario;
 
 /**
  * Se ejecuta antes de cada request y decide si el usuario puede pasar.
@@ -33,8 +33,10 @@ public class AuthFilter implements Filter {
 
 	// Servlets de ABMC: solo el administrador. Al crear un servlet nuevo, se agrega acá.
 	private static final Set<String> SOLO_ADMIN = Set.of(
-			"/PersonaServlet"
-			// "/HabitacionServlet", "/TipoHabitacionServlet", "/ServicioServlet", ...
+			"/PersonaServlet",
+			"/HabitacionServlet",
+			"/TipoHabitacionServlet"
+			// "/ServicioServlet", ...
 	);
 
 	@Override

@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import Entities.Persona;
 import data.DataPersona;
+import entities.Persona;
 
 @WebServlet("/PersonaServlet")
 public class PersonaServlet extends HttpServlet {

@@ -1,4 +1,4 @@
-package Entities;
+package entities;
 
 public class Usuario extends Persona {
     private String nombreUsuario;

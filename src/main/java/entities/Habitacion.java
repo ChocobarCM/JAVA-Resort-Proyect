@@ -1,4 +1,4 @@
-package Entities;
+package entities;
 
 public class Habitacion {
 	    private int idHab;

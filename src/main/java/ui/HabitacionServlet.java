@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import Entities.Habitacion;
-import Entities.Tipo_Habitacion;
+import entities.Habitacion;
+import entities.Tipo_Habitacion;
 import data.DataHabitacion;
 import data.DataTipoHabitacion;
 
@@ -39,7 +39,7 @@ public class HabitacionServlet extends HttpServlet {
         LinkedList<Tipo_Habitacion> listaTipos = dth.getAll();
         request.setAttribute("listaTipos", listaTipos);
         
-        request.getRequestDispatcher("/WEB-INF/Vista/habitaciones.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/Vista/habitacion.jsp").forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -3,10 +3,10 @@ package logic;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 
-import Entities.Persona;
-import Entities.Usuario;
 import data.DataPersona;
 import data.DataUsuario;
+import entities.Persona;
+import entities.Usuario;
 
 /**
  * Caso de uso "Crear cuenta": valida los datos y da de alta la Persona

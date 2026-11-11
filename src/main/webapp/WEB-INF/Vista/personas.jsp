@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.LinkedList" %>
-<%@ page import="Entities.Persona" %>
+<%@ page import="entities.Persona" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>

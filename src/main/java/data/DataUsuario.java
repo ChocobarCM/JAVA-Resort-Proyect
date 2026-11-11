@@ -1,9 +1,9 @@
 package data;
 
-import Entities.Usuario;
-
 import java.sql.*;
 import java.util.LinkedList;
+
+import entities.Usuario;
 
 public class DataUsuario {
 
