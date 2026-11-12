@@ -3,14 +3,12 @@
 <%@ page import="entities.Habitacion" %>
 <%@ page import="entities.Tipo_Habitacion" %>
 <%!
-    // Escapa HTML para no inyectar texto cargado por el usuario directamente en la página
     private static String esc(String s) {
         if (s == null) return "";
         return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
                 .replace("\"", "&quot;").replace("'", "&#39;");
     }
 
-    // Estados posibles de una habitación (columna habitacion.estado)
     private static final String[] ESTADOS = {"DISPONIBLE", "OCUPADA", "MANTENIMIENTO"};
 
     private static String badgeEstado(String estado) {
@@ -21,17 +19,23 @@
     }
 %>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Gestión de Habitaciones</title>
+    <title>Gestión de Habitaciones - Resort Grand Line</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<%= request.getContextPath() %>/css/onepiece.css" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark navbar-op">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-op-gold" href="index.jsp">RESORT GRAND LINE</a>
+    </div>
+</nav>
 
 <%
-    // Verificamos si el Servlet nos mandó una habitación para editar
     Habitacion hEdit = (Habitacion) request.getAttribute("habitacionEditar");
     boolean editando = (hEdit != null);
 
@@ -42,17 +46,16 @@
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="text-primary fw-bold mb-0">Gestión de Habitaciones</h2>
-            <p class="text-muted mb-0">ABMC de habitaciones y su tipo</p>
+            <h2 class="fw-bold mb-0">Gestión de Camarotes y Suites</h2>
+            <p class="text-op-muted mb-0">ABMC de habitaciones y su categoría</p>
         </div>
-        <a href="index.jsp" class="btn btn-outline-secondary">Volver al Menú</a>
+        <a href="index.jsp" class="btn btn-outline-op">Volver al Menú</a>
     </div>
 
     <div class="row">
-        <!-- Columna Izquierda: Formulario Dinámico (Alta / Modificación) -->
         <div class="col-lg-4 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header <%= editando ? "bg-warning text-dark" : "bg-success text-white" %> py-3">
+            <div class="card card-op-static">
+                <div class="card-header py-3">
                     <h5 class="card-title mb-0"><%= editando ? "Modificar Habitación (ID: " + hEdit.getIdHab() + ")" : "Nueva Habitación" %></h5>
                 </div>
                 <div class="card-body p-4">
@@ -60,32 +63,30 @@
                     <% if (!hayTipos) { %>
                         <div class="alert alert-warning py-2" role="alert">
                             No hay tipos de habitación cargados. Primero cree uno en
-                            <a href="TipoHabitacionServlet?action=list" class="alert-link">Tipos de Cuartos</a>.
+                            <a href="TipoHabitacionServlet?action=list" class="alert-link">Categorías de Camarote</a>.
                         </div>
                     <% } %>
 
                     <form action="HabitacionServlet" method="POST">
-                        <!-- Si estamos editando, mandamos action="update", sino action="create" -->
                         <input type="hidden" name="action" value="<%= editando ? "update" : "create" %>">
 
                         <% if (editando) { %>
-                            <!-- Si editamos, necesitamos mandar el ID oculto para el WHERE de SQL -->
                             <input type="hidden" name="idHab" value="<%= hEdit.getIdHab() %>">
                         <% } %>
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Número</label>
-                            <input type="text" class="form-control" name="num" required maxlength="20"
+                            <input type="text" class="form-control form-control-op" name="num" required maxlength="20"
                                    value="<%= editando ? esc(hEdit.getNum()) : "" %>">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Piso</label>
-                            <input type="number" class="form-control" name="piso" required min="0"
+                            <label class="form-label fw-semibold">Piso / Cubierta</label>
+                            <input type="number" class="form-control form-control-op" name="piso" required min="0"
                                    value="<%= editando ? hEdit.getPiso() : "" %>">
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Tipo de Habitación</label>
-                            <select class="form-select" name="idTipoHab" required <%= hayTipos ? "" : "disabled" %>>
+                            <select class="form-select form-select-op" name="idTipoHab" required <%= hayTipos ? "" : "disabled" %>>
                                 <option value="" disabled <%= editando ? "" : "selected" %>>Seleccione un tipo...</option>
                                 <%
                                     if (hayTipos) {
@@ -104,7 +105,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Estado</label>
-                            <select class="form-select" name="estado" required>
+                            <select class="form-select form-select-op" name="estado" required>
                                 <%
                                     for (String est : ESTADOS) {
                                         boolean selEst = editando ? est.equals(hEdit.getEstado()) : "DISPONIBLE".equals(est);
@@ -114,30 +115,28 @@
                             </select>
                         </div>
 
-                        <button type="submit" class="btn <%= editando ? "btn-warning" : "btn-success" %> w-100 py-2 mt-2 fw-semibold"
-                                <%= hayTipos ? "" : "disabled" %>>
+                        <button type="submit" class="btn btn-op-gold w-100 py-2 mt-2" <%= hayTipos ? "" : "disabled" %>>
                             <%= editando ? "Guardar Cambios" : "Guardar Habitación" %>
                         </button>
 
                         <% if (editando) { %>
-                            <a href="HabitacionServlet?action=list" class="btn btn-link w-100 mt-2 text-secondary">Cancelar edición</a>
+                            <a href="HabitacionServlet?action=list" class="btn btn-outline-light w-100 mt-2">Cancelar edición</a>
                         <% } %>
                     </form>
                 </div>
             </div>
         </div>
 
-        <!-- Columna Derecha: Tabla de Listado y Baja -->
         <div class="col-lg-8">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+            <div class="card card-op-static">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">Listado de Registros</h5>
-                    <a href="HabitacionServlet?action=list" class="btn btn-sm btn-outline-light">Refrescar</a>
+                    <a href="HabitacionServlet?action=list" class="btn btn-sm btn-outline-op">Refrescar</a>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover mb-0 align-middle">
-                            <thead class="table-secondary">
+                        <table class="table table-op table-striped table-hover mb-0 align-middle">
+                            <thead>
                                 <tr>
                                     <th>ID</th>
                                     <th>Número</th>
@@ -157,7 +156,7 @@
                                             Tipo_Habitacion th = hab.getTipo_Habitacion();
                                 %>
                                     <tr>
-                                        <td class="fw-bold"><%= hab.getIdHab() %></td>
+                                        <td class="fw-bold text-op-gold"><%= hab.getIdHab() %></td>
                                         <td><%= esc(hab.getNum()) %></td>
                                         <td><%= hab.getPiso() %></td>
                                         <td><%= th != null ? esc(th.getNomb()) : "-" %></td>
@@ -165,10 +164,7 @@
                                         <td><%= th != null ? "$" + th.getPrecioNoche() : "-" %></td>
                                         <td><span class="badge <%= badgeEstado(hab.getEstado()) %>"><%= esc(hab.getEstado()) %></span></td>
                                         <td class="text-end">
-                                            <!-- Botón Editar: Viaja por GET al Servlet pidiendo cargar los datos -->
-                                            <a href="HabitacionServlet?action=edit&id=<%= hab.getIdHab() %>" class="btn btn-sm btn-outline-primary me-1">Editar</a>
-
-                                            <!-- Botón Eliminar: Mini-formulario que viaja por POST para borrar -->
+                                            <a href="HabitacionServlet?action=edit&id=<%= hab.getIdHab() %>" class="btn btn-sm btn-outline-op me-1">Editar</a>
                                             <form action="HabitacionServlet" method="POST" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar esta habitación?');">
                                                 <input type="hidden" name="action" value="delete">
                                                 <input type="hidden" name="idHab" value="<%= hab.getIdHab() %>">
@@ -181,7 +177,7 @@
                                     } else {
                                 %>
                                     <tr>
-                                        <td colspan="8" class="text-center text-muted py-4">No hay habitaciones registradas.</td>
+                                        <td colspan="8" class="text-center text-op-muted py-4">No hay habitaciones registradas.</td>
                                     </tr>
                                 <%  } %>
                             </tbody>

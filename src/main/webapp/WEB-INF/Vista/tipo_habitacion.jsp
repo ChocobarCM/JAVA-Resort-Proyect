@@ -2,16 +2,23 @@
 <%@ page import="java.util.LinkedList" %>
 <%@ page import="entities.Tipo_Habitacion" %>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <title>Tipos de Habitación</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Categorías de Camarote - Resort Grand Line</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<%= request.getContextPath() %>/css/onepiece.css" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark navbar-op">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-op-gold" href="<%= request.getContextPath() %>/index.jsp">RESORT GRAND LINE</a>
+    </div>
+</nav>
 
 <%
-    // Verificamos si el Servlet nos mandó un tipo para editar
     Tipo_Habitacion thEdit = (Tipo_Habitacion) request.getAttribute("tipoHabitacionEditar");
     boolean editando = (thEdit != null);
 %>
@@ -19,17 +26,16 @@
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="text-primary fw-bold mb-0">Gestión de Tipos de Habitación</h2>
-            <p class="text-muted mb-0">Configuración de categorías y precios</p>
+            <h2 class="fw-bold mb-0">Categorías de Camarote</h2>
+            <p class="text-op-muted mb-0">Configuración de capacidades y precios en Berries</p>
         </div>
-        <a href="../index.jsp" class="btn btn-outline-secondary">Volver al Menú</a>
+        <a href="<%= request.getContextPath() %>/index.jsp" class="btn btn-outline-op">Volver al Menú</a>
     </div>
 
     <div class="row">
-        <!-- Formulario Dinámico -->
         <div class="col-lg-4 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header <%= editando ? "bg-warning text-dark" : "bg-success text-white" %> py-3">
+            <div class="card card-op-static">
+                <div class="card-header py-3">
                     <h5 class="card-title mb-0"><%= editando ? "Modificar Categoría (ID: " + thEdit.getIdTipoHab() + ")" : "Nueva Categoría" %></h5>
                 </div>
                 <div class="card-body p-4">
@@ -42,48 +48,46 @@
                         
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Nombre</label>
-                            <input type="text" class="form-control" name="nomb" required 
+                            <input type="text" class="form-control form-control-op" name="nomb" required 
                                    value="<%= editando ? thEdit.getNomb() : "" %>">
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Descripción</label>
-                            <input type="text" class="form-control" name="descripcion" required 
+                            <input type="text" class="form-control form-control-op" name="descripcion" required 
                                    value="<%= editando ? thEdit.getDescripcion() : "" %>">
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Capacidad (Personas)</label>
-                            <input type="number" class="form-control" name="capacidad" required min="1"
+                            <input type="number" class="form-control form-control-op" name="capacidad" required min="1"
                                    value="<%= editando ? thEdit.getCapacidad() : "" %>">
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Precio por Noche ($)</label>
-                            <input type="number" step="0.01" class="form-control" name="precioNoche" required min="0"
+                            <input type="number" step="0.01" class="form-control form-control-op" name="precioNoche" required min="0"
                                    value="<%= editando ? thEdit.getPrecioNoche() : "" %>">
                         </div>
                         
-                        <button type="submit" class="btn <%= editando ? "btn-warning" : "btn-success" %> w-100 py-2 mt-2 fw-semibold">
+                        <button type="submit" class="btn btn-op-gold w-100 py-2 mt-2">
                             <%= editando ? "Guardar Cambios" : "Guardar Categoría" %>
                         </button>
                         
                         <% if (editando) { %>
-                            <a href="TipoHabitacionServlet?action=list" class="btn btn-link w-100 mt-2 text-secondary">Cancelar edición</a>
+                            <a href="TipoHabitacionServlet?action=list" class="btn btn-outline-light w-100 mt-2">Cancelar edición</a>
                         <% } %>
                     </form>
                 </div>
             </div>
         </div>
-
-        <!-- Tabla de Listado -->
         <div class="col-lg-8">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+            <div class="card card-op-static">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">Listado de Registros</h5>
-                    <a href="TipoHabitacionServlet?action=list" class="btn btn-sm btn-outline-light">Refrescar</a>
+                    <a href="TipoHabitacionServlet?action=list" class="btn btn-sm btn-outline-op">Refrescar</a>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover mb-0 align-middle">
-                            <thead class="table-secondary">
+                        <table class="table table-op table-striped table-hover mb-0 align-middle">
+                            <thead>
                                 <tr>
                                     <th>ID</th>
                                     <th>Nombre</th>
@@ -100,13 +104,13 @@
                                         for (Tipo_Habitacion th : lista) {
                                 %>
                                     <tr>
-                                        <td class="fw-bold"><%= th.getIdTipoHab() %></td>
+                                        <td class="fw-bold text-op-gold"><%= th.getIdTipoHab() %></td>
                                         <td><%= th.getNomb() %></td>
                                         <td><%= th.getDescripcion() %></td>
                                         <td><%= th.getCapacidad() %> pax</td>
                                         <td>$<%= th.getPrecioNoche() %></td>
                                         <td class="text-end">
-                                            <a href="TipoHabitacionServlet?action=edit&id=<%= th.getIdTipoHab() %>" class="btn btn-sm btn-outline-primary me-1">Editar</a>
+                                            <a href="TipoHabitacionServlet?action=edit&id=<%= th.getIdTipoHab() %>" class="btn btn-sm btn-outline-op me-1">Editar</a>
                                             <form action="TipoHabitacionServlet" method="POST" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar esta categoría?');">
                                                 <input type="hidden" name="action" value="delete">
                                                 <input type="hidden" name="idTipoHab" value="<%= th.getIdTipoHab() %>">
@@ -119,7 +123,7 @@
                                     } else {
                                 %>
                                     <tr>
-                                        <td colspan="6" class="text-center text-muted py-4">No hay tipos de habitación registrados.</td>
+                                        <td colspan="6" class="text-center text-op-muted py-4">No hay tipos de habitación registrados.</td>
                                     </tr>
                                 <%  } %>
                             </tbody>
