@@ -105,8 +105,12 @@ CREATE TABLE Servicios (
 
 CREATE TABLE Reserva (
     idReserva INT AUTO_INCREMENT,
-    idUsuario INT NOT NULL,
+    idUsuario INT NOT NULL,          -- huesped: persona/usuario que hizo la reserva
     idHab INT NOT NULL,
+    fechaEntrada DATE NOT NULL,
+    fechaSalida DATE NOT NULL,       -- dia de salida: la habitacion queda libre ese dia
+    estado VARCHAR(20) NOT NULL DEFAULT 'CONFIRMADA',   -- CONFIRMADA / CANCELADA
+    precioTotal DECIMAL(10,2) NOT NULL,
 
     CONSTRAINT PK_Reserva
         PRIMARY KEY (idReserva),
@@ -121,5 +125,14 @@ CREATE TABLE Reserva (
         FOREIGN KEY (idHab)
         REFERENCES Habitacion(idHab)
         ON DELETE RESTRICT
-        ON UPDATE CASCADE
+        ON UPDATE CASCADE,
+
+    CONSTRAINT CHK_Reserva_Fechas
+        CHECK (fechaSalida > fechaEntrada),
+
+    CONSTRAINT CHK_Reserva_Precio
+        CHECK (precioTotal >= 0),
+
+    -- acelera la busqueda de habitaciones disponibles por rango de fechas
+    INDEX IDX_Reserva_Hab_Fechas (idHab, fechaEntrada, fechaSalida)
 );

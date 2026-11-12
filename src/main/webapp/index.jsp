@@ -81,13 +81,13 @@
             </div>
         </div>
 
-        <!-- Reservar (pendiente) -->
+        <!-- Reservar -->
         <div class="col-md-4">
-            <div class="card h-100 shadow-sm border-0">
+            <div class="card h-100 shadow-sm border-0 hover-card">
                 <div class="card-body text-center p-4 d-flex flex-column">
                     <h4 class="card-title fw-bold text-dark mb-3">Reservar</h4>
                     <p class="card-text text-muted flex-grow-1">Elija sus fechas y vea las habitaciones disponibles.</p>
-                    <button class="btn btn-secondary w-100 py-2 fw-semibold mt-3" disabled>Próximamente</button>
+                    <a href="ReservaServlet" class="btn btn-primary w-100 py-2 fw-semibold mt-3">Ingresar</a>
                 </div>
             </div>
         </div>
