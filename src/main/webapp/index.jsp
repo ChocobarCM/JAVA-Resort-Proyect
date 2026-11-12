@@ -74,7 +74,9 @@
                     <i class="bi bi-journal-bookmark text-op-gold display-5 mb-3"></i>
                     <h4 class="card-title fw-bold mb-3">Mis Reservas</h4>
                     <p class="card-text text-op-muted flex-grow-1">Consulte el estado y el detalle de sus reservas.</p>
-                    <button class="btn btn-secondary w-100 py-2 fw-semibold mt-3" disabled>Próximamente</button>
+					<a href="MisReservasServlet?action=list" class="btn btn-op-gold w-100 py-2 mt-3">
+							<i class="bi bi-compass me-1"></i> Consultar
+                    		</a>                 
                 </div>
             </div>
         </div>
@@ -85,11 +87,12 @@
                     <i class="bi bi-calendar-check text-op-gold display-5 mb-3"></i>
                     <h4 class="card-title fw-bold mb-3">Reservar</h4>
                     <p class="card-text text-op-muted flex-grow-1">Elija sus fechas y vea los camarotes disponibles.</p>
-                    <button class="btn btn-secondary w-100 py-2 fw-semibold mt-3" disabled>Próximamente</button>
+					<a href="ReservaServlet?action=list" class="btn btn-op-gold w-100 py-2 mt-3">
+					<i class="bi bi-compass me-1"></i> Reservar
+                    </a>                
                 </div>
             </div>
         </div>
-
         <div class="col-md-4">
             <div class="card card-op h-100">
                 <div class="card-body text-center p-4 d-flex flex-column">
