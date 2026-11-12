@@ -70,13 +70,13 @@
     <% if (!"ADMIN".equals(usuario.getRol())) { %>
     <!-- ===== Menú del cliente (sin privilegios de administrador) ===== -->
     <div class="row g-4 justify-content-center">
-        <!-- Mis Reservas (pendiente) -->
+        <!-- Mis Reservas -->
         <div class="col-md-4">
-            <div class="card h-100 shadow-sm border-0">
+            <div class="card h-100 shadow-sm border-0 hover-card">
                 <div class="card-body text-center p-4 d-flex flex-column">
                     <h4 class="card-title fw-bold text-dark mb-3">Mis Reservas</h4>
                     <p class="card-text text-muted flex-grow-1">Consulte el estado y el detalle de sus reservas.</p>
-                    <button class="btn btn-secondary w-100 py-2 fw-semibold mt-3" disabled>Próximamente</button>
+                    <a href="MisReservasServlet" class="btn btn-primary w-100 py-2 fw-semibold mt-3">Ingresar</a>
                 </div>
             </div>
         </div>

@@ -59,6 +59,7 @@
             <div>Del <strong><%= creada.getFechaEntrada().format(FECHA) %></strong>
                 al <strong><%= creada.getFechaSalida().format(FECHA) %></strong>
                 &middot; Total: <strong><%= money(creada.getPrecioTotal()) %></strong></div>
+            <div class="mt-2"><a href="MisReservasServlet" class="alert-link">Ver mis reservas</a></div>
         </div>
     <% } %>
 

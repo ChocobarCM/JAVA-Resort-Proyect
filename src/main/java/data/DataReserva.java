@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.LinkedList;
 
 import entities.Habitacion;
+import entities.Persona;
 import entities.Reserva;
 import entities.Tipo_Habitacion;
 
@@ -31,6 +32,25 @@ public class DataReserva {
 			"AND NOT EXISTS (SELECT 1 FROM Reserva r WHERE r.idHab = h.idHab " +
 			"AND r.estado <> '" + ESTADO_CANCELADA + "' " +
 			"AND r.fechaEntrada < ? AND r.fechaSalida > ?)";
+
+	/** Reserva + habitación + tipo, para listar y consultar. */
+	private static final String SQL_RESERVA_CON_HAB =
+			"SELECT r.idReserva, r.idUsuario, r.fechaEntrada, r.fechaSalida, r.estado, r.precioTotal, " +
+			"h.idHab, h.num, h.piso, h.estado AS estadoHab, " +
+			"t.idTipoHab, t.nomb, t.descripcion, t.capacidad, t.precioNoche " +
+			"FROM Reserva r " +
+			"INNER JOIN Habitacion h ON r.idHab = h.idHab " +
+			"INNER JOIN Tipo_Habitacion t ON h.idTipoHab = t.idTipoHab ";
+
+	/**
+	 * Cancela una reserva. Todas las condiciones van en el mismo UPDATE para que sea atómico:
+	 * que sea del usuario, que siga CONFIRMADA y que la entrada sea posterior a "hoy".
+	 * Parámetros, en orden: 1) idReserva  2) idUsuario  3) hoy
+	 */
+	private static final String SQL_CANCELAR =
+			"UPDATE Reserva SET estado = '" + ESTADO_CANCELADA + "' " +
+			"WHERE idReserva = ? AND idUsuario = ? " +
+			"AND estado = '" + ESTADO_CONFIRMADA + "' AND fechaEntrada > ?";
 
 	/** Habitaciones libres durante todo el rango [entrada, salida), de la más barata a la más cara. */
 	public LinkedList<Habitacion> getDisponibles(LocalDate entrada, LocalDate salida) throws SQLException {
@@ -170,7 +190,94 @@ public class DataReserva {
 		}
 	}
 
+	/** Todas las reservas de un usuario (también las canceladas), la de entrada más lejana primero. */
+	public LinkedList<Reserva> getByUsuario(int idUsuario) throws SQLException {
+		LinkedList<Reserva> lista = new LinkedList<>();
+
+		Connection conn = conexion(); // si no hay conexión lanza SQLException (y no hay nada que liberar)
+		try {
+			try (PreparedStatement stmt = conn.prepareStatement(
+					SQL_RESERVA_CON_HAB + "WHERE r.idUsuario = ? ORDER BY r.fechaEntrada DESC, r.idReserva DESC")) {
+				stmt.setInt(1, idUsuario);
+				try (ResultSet rs = stmt.executeQuery()) {
+					while (rs.next()) {
+						lista.add(mapReserva(rs));
+					}
+				}
+			}
+		} finally {
+			DbConnector.getInstancia().releaseConn();
+		}
+		return lista;
+	}
+
+	/** Una reserva, pero solo si pertenece a ese usuario (si no, devuelve null). */
+	public Reserva getByIdYUsuario(int idReserva, int idUsuario) throws SQLException {
+		Connection conn = conexion(); // si no hay conexión lanza SQLException (y no hay nada que liberar)
+		try {
+			try (PreparedStatement stmt = conn.prepareStatement(
+					SQL_RESERVA_CON_HAB + "WHERE r.idReserva = ? AND r.idUsuario = ?")) {
+				stmt.setInt(1, idReserva);
+				stmt.setInt(2, idUsuario);
+				try (ResultSet rs = stmt.executeQuery()) {
+					return rs.next() ? mapReserva(rs) : null;
+				}
+			}
+		} finally {
+			DbConnector.getInstancia().releaseConn();
+		}
+	}
+
+	/**
+	 * Pasa la reserva a CANCELADA (libera la habitación para esas fechas).
+	 * @return true si se canceló; false si no correspondía (no es del usuario, ya estaba
+	 *         cancelada o la entrada no es posterior a "hoy")
+	 */
+	public boolean cancelar(int idReserva, int idUsuario, LocalDate hoy) throws SQLException {
+		Connection conn = conexion(); // si no hay conexión lanza SQLException (y no hay nada que liberar)
+		try {
+			try (PreparedStatement stmt = conn.prepareStatement(SQL_CANCELAR)) {
+				stmt.setInt(1, idReserva);
+				stmt.setInt(2, idUsuario);
+				stmt.setDate(3, Date.valueOf(hoy));
+				return stmt.executeUpdate() == 1;
+			}
+		} finally {
+			DbConnector.getInstancia().releaseConn();
+		}
+	}
+
 	// ------------------------------------------------------------------
+
+	private Reserva mapReserva(ResultSet rs) throws SQLException {
+		Tipo_Habitacion th = new Tipo_Habitacion();
+		th.setIdTipoHab(rs.getInt("idTipoHab"));
+		th.setNomb(rs.getString("nomb"));
+		th.setDescripcion(rs.getString("descripcion"));
+		th.setCapacidad(rs.getInt("capacidad"));
+		th.setPrecioNoche(rs.getDouble("precioNoche"));
+
+		Habitacion hab = new Habitacion();
+		hab.setIdHab(rs.getInt("idHab"));
+		hab.setNum(rs.getString("num"));
+		hab.setPiso(rs.getInt("piso"));
+		hab.setEstado(rs.getString("estadoHab"));
+		hab.setTipo_Habitacion(th);
+
+		// Del huésped solo se carga el id (el resto ya está en la sesión del usuario)
+		Persona persona = new Persona();
+		persona.setIdPersona(rs.getInt("idUsuario"));
+
+		Reserva r = new Reserva();
+		r.setIdReserva(rs.getInt("idReserva"));
+		r.setPersona(persona);
+		r.setHabitacion(hab);
+		r.setFechaEntrada(rs.getDate("fechaEntrada").toLocalDate());
+		r.setFechaSalida(rs.getDate("fechaSalida").toLocalDate());
+		r.setEstado(rs.getString("estado"));
+		r.setPrecioTotal(rs.getDouble("precioTotal"));
+		return r;
+	}
 
 	private boolean libre(Connection conn, int idHab, LocalDate entrada, LocalDate salida) throws SQLException {
 		try (PreparedStatement stmt = conn.prepareStatement(

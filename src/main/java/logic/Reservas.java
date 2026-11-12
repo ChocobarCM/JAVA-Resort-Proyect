@@ -27,8 +27,18 @@ public class Reservas {
 	/** Tope de seguridad para la estadía (evita rangos absurdos). */
 	public static final int MAX_NOCHES = 365;
 
-	private final DataReserva dr = new DataReserva();
-	private final DataHabitacion dh = new DataHabitacion();
+	private final DataReserva dr;
+	private final DataHabitacion dh;
+
+	public Reservas() {
+		this(new DataReserva(), new DataHabitacion());
+	}
+
+	/** Permite inyectar los DAO (por ejemplo, para probar las reglas sin base de datos). */
+	public Reservas(DataReserva dr, DataHabitacion dh) {
+		this.dr = dr;
+		this.dh = dh;
+	}
 
 	/** Habitaciones libres en [entrada, salida), de la más barata a la más cara. */
 	public LinkedList<Habitacion> buscarDisponibles(String entrada, String salida) throws ReservaException {
@@ -102,6 +112,79 @@ public class Reservas {
 			throw new ReservaException("No se pudo registrar la reserva. Intente nuevamente más tarde.");
 		}
 		return r;
+	}
+
+	// ---------------------------- Mis reservas ----------------------------
+
+	/** Reservas del usuario (la de entrada más lejana primero), incluidas las canceladas. */
+	public LinkedList<Reserva> listarDeUsuario(Usuario usuario) throws ReservaException {
+		try {
+			return dr.getByUsuario(usuario.getIdPersona());
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ReservaException("No se pudieron consultar sus reservas. Intente nuevamente más tarde.");
+		}
+	}
+
+	/**
+	 * Cancela una reserva del usuario. Solo puede cancelar las suyas, que estén CONFIRMADAS
+	 * y hasta el día anterior a la entrada.
+	 */
+	public Reserva cancelar(Usuario usuario, int idReserva) throws ReservaException {
+		LocalDate hoy = LocalDate.now();
+		int idUsuario = usuario.getIdPersona();
+
+		try {
+			Reserva r = dr.getByIdYUsuario(idReserva, idUsuario);
+
+			// Si la reserva es de otra persona se responde igual que si no existiera
+			if (r == null) {
+				throw new ReservaException("La reserva no existe.");
+			}
+			if (DataReserva.ESTADO_CANCELADA.equals(r.getEstado())) {
+				throw new ReservaException("La reserva ya estaba cancelada.");
+			}
+			if (!esCancelable(r, hoy)) {
+				throw new ReservaException("Ya no se puede cancelar: la estadía ya comenzó o comienza hoy.");
+			}
+			if (!dr.cancelar(idReserva, idUsuario, hoy)) {
+				throw new ReservaException("No se pudo cancelar la reserva. Actualice la página e intente nuevamente.");
+			}
+
+			r.setEstado(DataReserva.ESTADO_CANCELADA);
+			return r;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ReservaException("No se pudo cancelar la reserva. Intente nuevamente más tarde.");
+		}
+	}
+
+	/** Regla de cancelación: confirmada y con entrada posterior a hoy. */
+	public static boolean esCancelable(Reserva r, LocalDate hoy) {
+		return DataReserva.ESTADO_CONFIRMADA.equals(r.getEstado()) && r.getFechaEntrada().isAfter(hoy);
+	}
+
+	public static boolean esCancelable(Reserva r) {
+		return esCancelable(r, LocalDate.now());
+	}
+
+	/** Estado para mostrarle al cliente, derivado del estado guardado y de las fechas. */
+	public static String estadoVisible(Reserva r, LocalDate hoy) {
+		if (DataReserva.ESTADO_CANCELADA.equals(r.getEstado())) {
+			return "Cancelada";
+		}
+		if (hoy.isBefore(r.getFechaEntrada())) {
+			return "Próxima";
+		}
+		if (hoy.isBefore(r.getFechaSalida())) { // el día de salida el huésped ya se retira
+			return "En curso";
+		}
+		return "Finalizada";
+	}
+
+	public static String estadoVisible(Reserva r) {
+		return estadoVisible(r, LocalDate.now());
 	}
 
 	// ------------------------------------------------------------------
