@@ -1,14 +1,14 @@
 -- =========================================================
--- BASE DE DATOS
+-- BORRAR BASE DE DATOS ANTERIOR (Para empezar limpio,unico listadoque se debe usar)
 -- =========================================================
+DROP DATABASE IF EXISTS java_resort;
 
-CREATE DATABASE IF NOT EXISTS java_resort;
+CREATE DATABASE java_resort;
 USE java_resort;
 
 -- =========================================================
 -- TABLA PERSONA
 -- =========================================================
-
 CREATE TABLE persona (
     idPersona INT AUTO_INCREMENT,
     dni INT NOT NULL,
@@ -16,17 +16,13 @@ CREATE TABLE persona (
     apellido VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL,
 
-    CONSTRAINT PK_Persona
-        PRIMARY KEY (idPersona),
-
-    CONSTRAINT UQ_Persona_DNI
-        UNIQUE (dni)
+    CONSTRAINT PK_Persona PRIMARY KEY (idPersona),
+    CONSTRAINT UQ_Persona_DNI UNIQUE (dni)
 );
 
 -- =========================================================
 -- TABLA USUARIO
 -- =========================================================
-
 CREATE TABLE usuario (
     idPersona INT PRIMARY KEY,
     nombreUsuario VARCHAR(50) NOT NULL UNIQUE,
@@ -40,7 +36,6 @@ CREATE TABLE usuario (
 -- =========================================================
 -- TABLA TIPO_HABITACION
 -- =========================================================
-
 CREATE TABLE Tipo_Habitacion (
     idTipoHab INT AUTO_INCREMENT,
     nomb VARCHAR(100) NOT NULL,
@@ -48,20 +43,14 @@ CREATE TABLE Tipo_Habitacion (
     capacidad INT NOT NULL,
     precioNoche DECIMAL(10,2) NOT NULL,
 
-    CONSTRAINT PK_Tipo_Habitacion
-        PRIMARY KEY (idTipoHab),
-
-    CONSTRAINT CHK_Tipo_Habitacion_Capacidad
-        CHECK (capacidad > 0),
-
-    CONSTRAINT CHK_Tipo_Habitacion_Precio
-        CHECK (precioNoche >= 0)
+    CONSTRAINT PK_Tipo_Habitacion PRIMARY KEY (idTipoHab),
+    CONSTRAINT CHK_Tipo_Habitacion_Capacidad CHECK (capacidad > 0),
+    CONSTRAINT CHK_Tipo_Habitacion_Precio CHECK (precioNoche >= 0)
 );
 
 -- =========================================================
 -- TABLA HABITACION
 -- =========================================================
-
 CREATE TABLE Habitacion (
     idHab INT AUTO_INCREMENT,
     num VARCHAR(20) NOT NULL,
@@ -69,70 +58,61 @@ CREATE TABLE Habitacion (
     estado VARCHAR(50) NOT NULL,
     idTipoHab INT NOT NULL,
 
-    CONSTRAINT PK_Habitacion
-        PRIMARY KEY (idHab),
-
-    CONSTRAINT UQ_Habitacion_Numero
-        UNIQUE (num),
-
-    CONSTRAINT FK_Habitacion_Tipo
-        FOREIGN KEY (idTipoHab)
-        REFERENCES Tipo_Habitacion(idTipoHab)
-        ON DELETE RESTRICT
-        ON UPDATE CASCADE
+    CONSTRAINT PK_Habitacion PRIMARY KEY (idHab),
+    CONSTRAINT UQ_Habitacion_Numero UNIQUE (num),
+    CONSTRAINT FK_Habitacion_Tipo FOREIGN KEY (idTipoHab) REFERENCES Tipo_Habitacion(idTipoHab) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- =========================================================
 -- TABLA SERVICIOS
 -- =========================================================
-
 CREATE TABLE Servicios (
     idServicio INT AUTO_INCREMENT,
     nombre VARCHAR(100) NOT NULL,
     descripcion VARCHAR(255),
     precioS DECIMAL(10,2) NOT NULL,
 
-    CONSTRAINT PK_Servicios
-        PRIMARY KEY (idServicio),
-
-    CONSTRAINT CHK_Servicios_Precio
-        CHECK (precioS >= 0)
+    CONSTRAINT PK_Servicios PRIMARY KEY (idServicio),
+    CONSTRAINT CHK_Servicios_Precio CHECK (precioS >= 0)
 );
 
 -- =========================================================
--- TABLA RESERVA
+-- TABLA RESERVA (Corregida)
 -- =========================================================
-
 CREATE TABLE Reserva (
     idReserva INT AUTO_INCREMENT,
-    idUsuario INT NOT NULL,          -- huesped: persona/usuario que hizo la reserva
+    idUsuario INT NOT NULL,
     idHab INT NOT NULL,
     fechaEntrada DATE NOT NULL,
-    fechaSalida DATE NOT NULL,       -- dia de salida: la habitacion queda libre ese dia
-    estado VARCHAR(20) NOT NULL DEFAULT 'CONFIRMADA',   -- CONFIRMADA / CANCELADA
+    fechaSalida DATE NOT NULL,
+    estado VARCHAR(20) NOT NULL DEFAULT 'CONFIRMADA',
     precioTotal DECIMAL(10,2) NOT NULL,
 
-    CONSTRAINT PK_Reserva
-        PRIMARY KEY (idReserva),
+    CONSTRAINT PK_Reserva PRIMARY KEY (idReserva),
+    CONSTRAINT FK_Reserva_Usuario FOREIGN KEY (idUsuario) REFERENCES usuario(idPersona) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT FK_Reserva_Habitacion FOREIGN KEY (idHab) REFERENCES Habitacion(idHab) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT CHK_Reserva_Fechas CHECK (fechaSalida > fechaEntrada)
+); 
+-- ¡Acá estaba el error! Faltaba cerrar con );
 
-    CONSTRAINT FK_Reserva_Usuario
-        FOREIGN KEY (idUsuario)
-        REFERENCES usuario(idPersona)
-        ON DELETE RESTRICT
-        ON UPDATE CASCADE,
+-- =========================================================
+-- USUARIO ADMINISTRADOR INICIAL
+-- =========================================================
+INSERT IGNORE INTO persona (dni, nombre, apellido, email)
+VALUES (11111111, 'Admin', 'Sistema', 'admin@resort.com');
 
-    CONSTRAINT FK_Reserva_Habitacion
-        FOREIGN KEY (idHab)
-        REFERENCES Habitacion(idHab)
-        ON DELETE RESTRICT
-        ON UPDATE CASCADE,
+INSERT IGNORE INTO usuario (idPersona, nombreUsuario, contrasenia, rol, estado)
+SELECT idPersona,
+       'admin',
+       '120000:hc5gcMOapkfmzuu5BHy2tg==:TqsJhdXqoR51rq2Op2w+Aovf/qYFckMhP1O9hDNxsUU=',
+       'ADMIN',
+       'ACTIVO'
+FROM persona
+WHERE dni = 11111111;
 
-    CONSTRAINT CHK_Reserva_Fechas
-        CHECK (fechaSalida > fechaEntrada),
-
-    CONSTRAINT CHK_Reserva_Precio
-        CHECK (precioTotal >= 0),
-
-    -- acelera la busqueda de habitaciones disponibles por rango de fechas
-    INDEX IDX_Reserva_Hab_Fechas (idHab, fechaEntrada, fechaSalida)
-);
+-- =========================================================
+-- CREACIÓN DE USUARIO DE BD (Opcional)
+-- =========================================================
+CREATE USER IF NOT EXISTS 'java'@'%' IDENTIFIED BY 'Arceus';
+GRANT SELECT, INSERT, UPDATE, DELETE ON java_resort.* TO 'java'@'%';
+FLUSH PRIVILEGES;

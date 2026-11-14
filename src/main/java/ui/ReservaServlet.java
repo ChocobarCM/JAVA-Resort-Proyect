@@ -90,7 +90,21 @@ public class ReservaServlet extends HttpServlet {
 
 		try {
 			Reserva reserva = new Reservas().reservar(usuario, parseId(request.getParameter("idHab")), entrada, salida);
-
+			final Usuario usuarioFinal = usuario; 
+			final Reserva reservaFinal = reserva;
+			new Thread(() -> {
+				try {
+					logic.EmailService.enviarConfirmacionReserva(
+						usuarioFinal.getEmail(), 
+						usuarioFinal.getNombre(), 
+						reservaFinal.getFechaEntrada().toString(),
+						reservaFinal.getFechaSalida().toString()
+					);
+				} catch (Exception e) {
+					System.out.println("Fallo el envío del mail, pero la reserva se guardó bien.");
+					e.printStackTrace();
+				}
+			}).start();
 			// Patrón PRG: redirigimos para que F5 no vuelva a enviar la reserva
 			request.getSession().setAttribute(RESERVA_CREADA, reserva);
 			response.sendRedirect(request.getContextPath() + "/ReservaServlet?action=exito");

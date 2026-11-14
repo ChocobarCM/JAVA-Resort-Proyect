@@ -74,7 +74,7 @@
                     <i class="bi bi-journal-bookmark text-op-gold display-5 mb-3"></i>
                     <h4 class="card-title fw-bold mb-3">Mis Reservas</h4>
                     <p class="card-text text-op-muted flex-grow-1">Consulte el estado y el detalle de sus reservas.</p>
-                    <button class="btn btn-secondary w-100 py-2 fw-semibold mt-3" disabled>Próximamente</button>
+                    <a href="${pageContext.request.contextPath}/MisReservasServlet" class="btn btn-primary w-100 py-2 fw-semibold mt-3">Ingresar</a>
                 </div>
             </div>
         </div>
@@ -85,7 +85,7 @@
                     <i class="bi bi-calendar-check text-op-gold display-5 mb-3"></i>
                     <h4 class="card-title fw-bold mb-3">Reservar</h4>
                     <p class="card-text text-op-muted flex-grow-1">Elija sus fechas y vea los camarotes disponibles.</p>
-                    <button class="btn btn-secondary w-100 py-2 fw-semibold mt-3" disabled>Próximamente</button>
+                    <a href="${pageContext.request.contextPath}/ReservaServlet" class="btn btn-primary w-100 py-2 fw-semibold mt-3">Ingresar</a>
                 </div>
             </div>
         </div>
@@ -146,7 +146,9 @@
                     <i class="bi bi-calendar2-week text-op-gold display-5 mb-3"></i>
                     <h5 class="card-title fw-bold mb-3">RESERVAS</h5>
                     <p class="card-text text-op-muted flex-grow-1">Control de asignaciones, turnos y panel de fechas ocupadas.</p>
-                    <button class="btn btn-secondary w-100 py-2 fw-semibold mt-3" disabled>Próximamente</button>
+                    <a href="${pageContext.request.contextPath}/MisReservasServlet" class="btn btn-op-gold w-100 py-2 mt-3">
+                        <i class="bi bi-calendar-check me-1"></i> Ingresar
+                    </a>
                 </div>
             </div>
         </div>
