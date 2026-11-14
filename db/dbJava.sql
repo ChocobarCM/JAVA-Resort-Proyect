@@ -136,3 +136,27 @@ CREATE TABLE Reserva (
     -- acelera la busqueda de habitaciones disponibles por rango de fechas
     INDEX IDX_Reserva_Hab_Fechas (idHab, fechaEntrada, fechaSalida)
 );
+
+-- =========================================================
+-- TABLA IMAGEN_HABITACION (varias imagenes por habitacion)
+-- =========================================================
+
+CREATE TABLE Imagen_Habitacion (
+    idImagen INT AUTO_INCREMENT,
+    idHab INT NOT NULL,
+    nombreArchivo VARCHAR(100) NOT NULL,   -- solo el nombre (ej: 3f2a...c1.jpg), la carpeta la define GestorImagenes
+
+    CONSTRAINT PK_Imagen_Habitacion
+        PRIMARY KEY (idImagen),
+
+    CONSTRAINT UQ_Imagen_Habitacion_Archivo
+        UNIQUE (nombreArchivo),
+
+    -- si se borra la habitacion, se borran sus filas de imagenes
+    -- (los archivos fisicos los borra el servlet)
+    CONSTRAINT FK_Imagen_Habitacion_Hab
+        FOREIGN KEY (idHab)
+        REFERENCES Habitacion(idHab)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
