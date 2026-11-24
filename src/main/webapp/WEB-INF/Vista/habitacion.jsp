@@ -2,6 +2,8 @@
 <%@ page import="java.util.LinkedList" %>
 <%@ page import="entities.Habitacion" %>
 <%@ page import="entities.Tipo_Habitacion" %>
+<%@ page import="entities.ImagenHabitacion" %>
+<%@ page import="logic.GestorImagenes" %>
 <%!
     private static String esc(String s) {
         if (s == null) return "";
@@ -41,9 +43,27 @@
 
     LinkedList<Tipo_Habitacion> tipos = (LinkedList<Tipo_Habitacion>) request.getAttribute("listaTipos");
     boolean hayTipos = (tipos != null && !tipos.isEmpty());
+
+    // cuántas imágenes más admite esta habitación (máximo por habitación - las que ya tiene)
+    int cupoImagenes = GestorImagenes.MAX_IMAGENES_POR_HABITACION - (editando ? hEdit.getImagenes().size() : 0);
+    long maxMb = GestorImagenes.TAMANIO_MAX / (1024 * 1024);
+
+    LinkedList<String> avisos = (LinkedList<String>) request.getAttribute("avisos");
 %>
 
 <div class="container py-5">
+    <% if (avisos != null && !avisos.isEmpty()) { %>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Atención:</strong>
+            <ul class="mb-0">
+                <% for (String aviso : avisos) { %>
+                    <li><%= esc(aviso) %></li>
+                <% } %>
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    <% } %>
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="fw-bold mb-0">Gestión de Camarotes y Suites</h2>
@@ -67,7 +87,7 @@
                         </div>
                     <% } %>
 
-                    <form action="HabitacionServlet" method="POST">
+                    <form action="HabitacionServlet" method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="<%= editando ? "update" : "create" %>">
 
                         <% if (editando) { %>
@@ -115,6 +135,21 @@
                             </select>
                         </div>
 
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="imagenes">Imágenes</label>
+                            <input type="file" class="form-control form-control-op" id="imagenes" name="imagenes" multiple
+                                   accept="image/jpeg,image/png,image/gif,image/webp" <%= cupoImagenes <= 0 ? "disabled" : "" %>>
+                            <div class="form-text text-op-muted">
+                                <% if (cupoImagenes > 0) { %>
+                                    JPG, PNG, GIF o WEBP, hasta <%= maxMb %> MB cada una. Puede agregar <%= cupoImagenes %> más.
+                                <% } else { %>
+                                    Esta habitación ya tiene el máximo de <%= GestorImagenes.MAX_IMAGENES_POR_HABITACION %> imágenes.
+                                <% } %>
+                            </div>
+                            <div id="errorImagenes" class="text-danger small mt-1"></div>
+                            <div id="previewImagenes" class="d-flex flex-wrap gap-2 mt-2"></div>
+                        </div>
+
                         <button type="submit" class="btn btn-op-gold w-100 py-2 mt-2" <%= hayTipos ? "" : "disabled" %>>
                             <%= editando ? "Guardar Cambios" : "Guardar Habitación" %>
                         </button>
@@ -123,6 +158,37 @@
                             <a href="HabitacionServlet?action=list" class="btn btn-outline-light w-100 mt-2">Cancelar edición</a>
                         <% } %>
                     </form>
+
+                    <% if (editando) {
+                           LinkedList<ImagenHabitacion> imgs = hEdit.getImagenes();
+                    %>
+                        <hr class="my-4">
+                        <h6 class="fw-semibold">Imágenes actuales (<%= imgs.size() %>/<%= GestorImagenes.MAX_IMAGENES_POR_HABITACION %>)</h6>
+                        <% if (imgs.isEmpty()) { %>
+                            <p class="text-op-muted small mb-0">Esta habitación todavía no tiene imágenes.</p>
+                        <% } else { %>
+                            <div class="row g-2">
+                                <% for (ImagenHabitacion im : imgs) { %>
+                                    <div class="col-6">
+                                        <div class="position-relative">
+                                            <a href="ImagenServlet?id=<%= im.getIdImagen() %>" target="_blank">
+                                                <img src="ImagenServlet?id=<%= im.getIdImagen() %>" loading="lazy"
+                                                     alt="Imagen de la habitación <%= esc(hEdit.getNum()) %>"
+                                                     class="w-100 rounded border" style="aspect-ratio: 4/3; object-fit: cover;">
+                                            </a>
+                                            <form action="HabitacionServlet" method="POST" class="position-absolute top-0 end-0 m-1"
+                                                  onsubmit="return confirm('¿Seguro que deseas eliminar esta imagen?');">
+                                                <input type="hidden" name="action" value="deleteImage">
+                                                <input type="hidden" name="idHab" value="<%= hEdit.getIdHab() %>">
+                                                <input type="hidden" name="idImagen" value="<%= im.getIdImagen() %>">
+                                                <button type="submit" class="btn btn-sm btn-danger py-0 px-2" title="Eliminar imagen">&times;</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            </div>
+                        <% } %>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -139,6 +205,7 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
+                                    <th>Imagen</th>
                                     <th>Número</th>
                                     <th>Piso</th>
                                     <th>Tipo</th>
@@ -157,6 +224,21 @@
                                 %>
                                     <tr>
                                         <td class="fw-bold text-op-gold"><%= hab.getIdHab() %></td>
+                                        <td>
+                                            <% ImagenHabitacion portada = hab.getPortada(); %>
+                                            <% if (portada != null) { %>
+                                                <a href="ImagenServlet?id=<%= portada.getIdImagen() %>" target="_blank">
+                                                    <img src="ImagenServlet?id=<%= portada.getIdImagen() %>" loading="lazy"
+                                                         alt="Imagen de la habitación <%= esc(hab.getNum()) %>"
+                                                         class="rounded border" style="width: 64px; height: 48px; object-fit: cover;">
+                                                </a>
+                                                <% if (hab.getImagenes().size() > 1) { %>
+                                                    <span class="badge bg-secondary ms-1">+<%= hab.getImagenes().size() - 1 %></span>
+                                                <% } %>
+                                            <% } else { %>
+                                                <span class="text-op-muted small">Sin imagen</span>
+                                            <% } %>
+                                        </td>
                                         <td><%= esc(hab.getNum()) %></td>
                                         <td><%= hab.getPiso() %></td>
                                         <td><%= th != null ? esc(th.getNomb()) : "-" %></td>
@@ -177,7 +259,7 @@
                                     } else {
                                 %>
                                     <tr>
-                                        <td colspan="8" class="text-center text-op-muted py-4">No hay habitaciones registradas.</td>
+                                        <td colspan="9" class="text-center text-op-muted py-4">No hay habitaciones registradas.</td>
                                     </tr>
                                 <%  } %>
                             </tbody>
@@ -188,5 +270,51 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Vista previa y validación rápida en el navegador. La validación REAL la hace el servidor (GestorImagenes).
+    (function () {
+        var input = document.getElementById('imagenes');
+        var preview = document.getElementById('previewImagenes');
+        var error = document.getElementById('errorImagenes');
+        var MAX_BYTES = <%= GestorImagenes.TAMANIO_MAX %>;
+        var CUPO = <%= cupoImagenes %>;
+        var TIPOS = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+        input.addEventListener('change', function () {
+            preview.innerHTML = '';
+            error.textContent = '';
+            var archivos = Array.prototype.slice.call(input.files);
+            var problema = '';
+
+            if (archivos.length > CUPO) {
+                problema = 'Solo se pueden agregar ' + CUPO + ' imagen(es) más a esta habitación.';
+            }
+            archivos.forEach(function (f) {
+                if (TIPOS.indexOf(f.type) === -1) {
+                    problema = '"' + f.name + '" no tiene un formato permitido (JPG, PNG, GIF o WEBP).';
+                } else if (f.size > MAX_BYTES) {
+                    problema = '"' + f.name + '" supera los <%= maxMb %> MB.';
+                }
+            });
+
+            if (problema) {
+                error.textContent = problema;
+                input.value = '';
+                return;
+            }
+
+            archivos.forEach(function (f) {
+                var img = document.createElement('img');
+                img.src = URL.createObjectURL(f);
+                img.alt = f.name;
+                img.className = 'rounded border';
+                img.style.cssText = 'width: 72px; height: 54px; object-fit: cover;';
+                preview.appendChild(img);
+            });
+        });
+    })();
+</script>
 </body>
 </html>

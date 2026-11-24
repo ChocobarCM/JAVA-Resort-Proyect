@@ -1,11 +1,14 @@
 package entities;
 
+import java.util.LinkedList;
+
 public class Habitacion {
 	    private int idHab;
 	    private String num;
 	    private int piso;
 	    private String estado;
 	    private Tipo_Habitacion tipo_Habitacion;
+	    private LinkedList<ImagenHabitacion> imagenes = new LinkedList<>();
 		public int getIdHab() {
 			return idHab;
 		}
@@ -37,6 +40,17 @@ public class Habitacion {
 			this.tipo_Habitacion = tipo_Habitacion;
 		}
 	    
+		
+		public LinkedList<ImagenHabitacion> getImagenes() {
+			return imagenes;
+		}
+		public void setImagenes(LinkedList<ImagenHabitacion> imagenes) {
+			this.imagenes = imagenes;
+		}
+		/** La primera imagen cargada hace de portada; null si la habitación no tiene imágenes. */
+		public ImagenHabitacion getPortada() {
+			return imagenes.isEmpty() ? null : imagenes.getFirst();
+		}
 		}
 
 

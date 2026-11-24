@@ -1,6 +1,7 @@
 package ui;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import data.DataImagenHabitacion;
 import entities.Habitacion;
 import entities.Reserva;
 import entities.Usuario;
@@ -109,6 +111,12 @@ public class ReservaServlet extends HttpServlet {
 
 		try {
 			LinkedList<Habitacion> disponibles = new Reservas().buscarDisponibles(entrada, salida);
+			// Fotos para mostrar junto a cada habitación. Si fallan, la búsqueda sigue funcionando sin ellas.
+			try {
+				new DataImagenHabitacion().cargarImagenes(disponibles);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			LocalDate fEntrada = Reservas.parsearFecha(entrada);
 			LocalDate fSalida = Reservas.parsearFecha(salida);
 

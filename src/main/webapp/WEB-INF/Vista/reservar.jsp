@@ -2,6 +2,7 @@
 <%@ page import="java.util.LinkedList, java.util.Locale, java.time.LocalDate, java.time.format.DateTimeFormatter" %>
 <%@ page import="entities.Habitacion" %>
 <%@ page import="entities.Tipo_Habitacion" %>
+<%@ page import="entities.ImagenHabitacion" %>
 <%@ page import="entities.Reserva" %>
 <%!
     private static final DateTimeFormatter FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -107,6 +108,7 @@
                         <table class="table table-striped table-hover mb-0 align-middle">
                             <thead class="table-secondary">
                                 <tr>
+                                    <th>Fotos</th>
                                     <th>Habitación</th>
                                     <th>Piso</th>
                                     <th>Tipo</th>
@@ -122,6 +124,21 @@
                                         Tipo_Habitacion th = hab.getTipo_Habitacion();
                                 %>
                                     <tr>
+                                        <td style="min-width: 150px;">
+                                            <% if (hab.getImagenes().isEmpty()) { %>
+                                                <span class="small text-muted">Sin fotos</span>
+                                            <% } else { %>
+                                                <div class="d-flex flex-wrap gap-1">
+                                                    <% for (ImagenHabitacion im : hab.getImagenes()) { %>
+                                                        <a href="ImagenServlet?id=<%= im.getIdImagen() %>" target="_blank">
+                                                            <img src="ImagenServlet?id=<%= im.getIdImagen() %>" loading="lazy"
+                                                                 alt="Foto de la habitación <%= esc(hab.getNum()) %>"
+                                                                 class="rounded border" style="width: 64px; height: 48px; object-fit: cover;">
+                                                        </a>
+                                                    <% } %>
+                                                </div>
+                                            <% } %>
+                                        </td>
                                         <td class="fw-bold"><%= esc(hab.getNum()) %></td>
                                         <td><%= hab.getPiso() %></td>
                                         <td>
